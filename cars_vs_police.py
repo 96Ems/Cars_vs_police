@@ -393,6 +393,8 @@ class Game:
         self.score = 0
         self.collision_flash = 0
         self.death_flash = 0
+        self.esc_pressed = False
+        self.esc_timer = 0
 
     def __init__(self):
         self.running = True
@@ -476,6 +478,11 @@ class Game:
         # FPS
         self.fps_clock = pygame.time.Clock()
         self.current_fps = 0
+
+        # Gestion ESC
+        self.esc_pressed = False
+        self.esc_timer = 0
+        self.esc_hold_time = 180  # 3 secondes à 60 FPS
 
     def create_players(self):
         """Crée les joueurs selon le nombre sélectionné"""
@@ -1245,6 +1252,29 @@ class Game:
             DISPLAY.blit(info, info_rect)
             y_offset += 35
 
+    def draw_esc_indicator(self):
+        """Affiche l'indicateur ESC pour quitter"""
+        if self.esc_pressed:
+            # Barre de progression en haut au centre
+            bar_width = 300
+            bar_height = 30
+            bar_x = SCREEN_WIDTH // 2 - bar_width // 2
+            bar_y = 20
+
+            # Fond de la barre
+            pygame.draw.rect(DISPLAY, (100, 0, 0), (bar_x, bar_y, bar_width, bar_height))
+            # Barre de progression
+            progress = min(self.esc_timer / self.esc_hold_time, 1.0)
+            pygame.draw.rect(DISPLAY, (255, 0, 0), (bar_x, bar_y, bar_width * progress, bar_height))
+            # Bordure
+            pygame.draw.rect(DISPLAY, (255, 255, 255), (bar_x, bar_y, bar_width, bar_height), 2)
+
+            # Texte
+            font = pygame.font.Font(None, 24)
+            text = font.render("Maintenez ESC pour quitter", True, WHITE)
+            text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, bar_y + bar_height // 2 - 5))
+            DISPLAY.blit(text, text_rect)
+
     def update_ui_rects(self):
         """Met à jour les positions des rects des boutons UI"""
         # Bouton SKIN en haut à droite
@@ -1475,7 +1505,17 @@ class Game:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        self.running = False
+                        self.esc_pressed = True
+                        self.esc_timer = 0
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_ESCAPE:
+                        self.esc_pressed = False
+                        # Revenir à l'écran précédent (pas de quit)
+                        if self.selecting_players:
+                            self.selecting_players = False
+                            self.in_menu = True
+                        elif not self.in_menu and not self.game_over:
+                            self.in_menu = True
                     if event.key == pygame.K_r and self.game_over:
                         self.reset_to_menu()
                     # ENTRÉE pour relancer le jeu
@@ -1552,6 +1592,13 @@ class Game:
                                     player.color = color
                                 self.show_skin_menu = False
                                 break
+
+            # Gestion du timer ESC (pour quitter après 3 secondes)
+            if self.esc_pressed:
+                self.esc_timer += 1
+                if self.esc_timer >= self.esc_hold_time:
+                    # Quitter le jeu après 3 secondes
+                    self.running = False
 
             # Afficher le menu, sélecteur de joueurs, ou jouer
             if self.in_menu:
@@ -1659,6 +1706,9 @@ class Game:
 
                 # === HUD MULTI-VIEWPORT ===
                 self.draw_hud_multiplayer() if len(self.players) > 1 else self.draw_hud()
+
+            # Afficher l'indicateur ESC
+            self.draw_esc_indicator()
 
             pygame.display.flip()
             CLOCK.tick(FPS)
