@@ -1664,12 +1664,7 @@ class Game:
                     # Utiliser self.play_button_rect créé dans draw_menu()
                     if self.play_button_rect and self.play_button_rect.collidepoint(mouse_pos):
                         self.in_menu = False
-                        # Créer les joueurs directement (1 joueur par défaut)
-                        self.num_players = 1
-                        self.create_players()
-                        if self.players:
-                            self.player = self.players[0]
-                            self.player_lives = [3] * self.num_players
+                        self.selecting_players = True
 
                 # Gestion du sélecteur de joueurs
                 if event.type == pygame.MOUSEBUTTONDOWN and self.selecting_players:
