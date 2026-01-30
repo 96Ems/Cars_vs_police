@@ -483,50 +483,52 @@ class Game:
             {"x": 5000, "y": 15000, "w": 700, "h": 900},
         ]
 
-        # Bâtiments en décoration (avec collision)
+        # Bâtiments en décoration (avec collision) - LOIN des routes
+        # Routes: horizontale y=8000, verticale x=12000 (largeur 80px)
+        # On évite ± 100px de chaque route
         self.buildings = [
             {"x": 1000, "y": 1000, "w": 400, "h": 400, "color": (200, 100, 50), "is_building": True},
             {"x": 3000, "y": 3500, "w": 350, "h": 350, "color": (180, 120, 60), "is_building": True},
             {"x": 6000, "y": 2000, "w": 500, "h": 300, "color": (220, 140, 80), "is_building": True},
-            {"x": 8000, "y": 7000, "w": 450, "h": 400, "color": (200, 110, 70), "is_building": True},
-            {"x": 12000, "y": 3000, "w": 380, "h": 380, "color": (190, 130, 50), "is_building": True},
-            {"x": 18000, "y": 8000, "w": 420, "h": 320, "color": (210, 100, 60), "is_building": True},
-            {"x": 4000, "y": 9000, "w": 400, "h": 450, "color": (185, 125, 65), "is_building": True},
+            {"x": 8000, "y": 6000, "w": 450, "h": 400, "color": (200, 110, 70), "is_building": True},
+            {"x": 10000, "y": 3000, "w": 380, "h": 380, "color": (190, 130, 50), "is_building": True},
+            {"x": 18000, "y": 6000, "w": 420, "h": 320, "color": (210, 100, 60), "is_building": True},
+            {"x": 4000, "y": 10000, "w": 400, "h": 450, "color": (185, 125, 65), "is_building": True},
             {"x": 14000, "y": 14000, "w": 500, "h": 400, "color": (205, 115, 55), "is_building": True},
-            {"x": 2000, "y": 12000, "w": 380, "h": 420, "color": (195, 105, 75), "is_building": True},
-            {"x": 18000, "y": 3000, "w": 430, "h": 350, "color": (215, 130, 70), "is_building": True},
-            # 30 bâtiments supplémentaires
+            {"x": 2000, "y": 13000, "w": 380, "h": 420, "color": (195, 105, 75), "is_building": True},
+            {"x": 18000, "y": 2000, "w": 430, "h": 350, "color": (215, 130, 70), "is_building": True},
+            # 30 bâtiments supplémentaires - loin des routes
             {"x": 500, "y": 5000, "w": 350, "h": 300, "color": (200, 120, 80), "is_building": True},
             {"x": 7000, "y": 4500, "w": 380, "h": 380, "color": (185, 110, 60), "is_building": True},
-            {"x": 11000, "y": 6000, "w": 420, "h": 350, "color": (210, 125, 70), "is_building": True},
+            {"x": 10500, "y": 6500, "w": 420, "h": 350, "color": (210, 125, 70), "is_building": True},
             {"x": 15000, "y": 2500, "w": 400, "h": 400, "color": (205, 105, 75), "is_building": True},
-            {"x": 3500, "y": 8000, "w": 360, "h": 360, "color": (190, 115, 55), "is_building": True},
-            {"x": 9000, "y": 10000, "w": 430, "h": 320, "color": (220, 130, 80), "is_building": True},
-            {"x": 16000, "y": 7000, "w": 390, "h": 390, "color": (200, 100, 70), "is_building": True},
-            {"x": 6500, "y": 11000, "w": 370, "h": 370, "color": (195, 125, 65), "is_building": True},
-            {"x": 19000, "y": 12000, "w": 410, "h": 340, "color": (215, 110, 60), "is_building": True},
+            {"x": 3500, "y": 10000, "w": 360, "h": 360, "color": (190, 115, 55), "is_building": True},
+            {"x": 9000, "y": 10500, "w": 430, "h": 320, "color": (220, 130, 80), "is_building": True},
+            {"x": 16000, "y": 6500, "w": 390, "h": 390, "color": (200, 100, 70), "is_building": True},
+            {"x": 6500, "y": 11500, "w": 370, "h": 370, "color": (195, 125, 65), "is_building": True},
+            {"x": 19000, "y": 13000, "w": 410, "h": 340, "color": (215, 110, 60), "is_building": True},
             {"x": 1500, "y": 15000, "w": 400, "h": 400, "color": (205, 120, 75), "is_building": True},
-            {"x": 10500, "y": 13000, "w": 360, "h": 360, "color": (185, 100, 50), "is_building": True},
-            {"x": 13500, "y": 8500, "w": 420, "h": 330, "color": (210, 115, 70), "is_building": True},
+            {"x": 10500, "y": 13500, "w": 360, "h": 360, "color": (185, 100, 50), "is_building": True},
+            {"x": 14500, "y": 9000, "w": 420, "h": 330, "color": (210, 115, 70), "is_building": True},
             {"x": 4500, "y": 5500, "w": 380, "h": 380, "color": (200, 130, 80), "is_building": True},
-            {"x": 17500, "y": 5000, "w": 350, "h": 350, "color": (190, 110, 60), "is_building": True},
-            {"x": 2500, "y": 7000, "w": 410, "h": 350, "color": (220, 120, 75), "is_building": True},
-            {"x": 12500, "y": 10000, "w": 390, "h": 390, "color": (205, 105, 65), "is_building": True},
-            {"x": 8500, "y": 3000, "w": 370, "h": 370, "color": (195, 125, 70), "is_building": True},
-            {"x": 5500, "y": 13500, "w": 420, "h": 340, "color": (210, 100, 55), "is_building": True},
+            {"x": 17500, "y": 4000, "w": 350, "h": 350, "color": (190, 110, 60), "is_building": True},
+            {"x": 2500, "y": 6000, "w": 410, "h": 350, "color": (220, 120, 75), "is_building": True},
+            {"x": 13000, "y": 10500, "w": 390, "h": 390, "color": (205, 105, 65), "is_building": True},
+            {"x": 8500, "y": 2500, "w": 370, "h": 370, "color": (195, 125, 70), "is_building": True},
+            {"x": 5500, "y": 14000, "w": 420, "h": 340, "color": (210, 100, 55), "is_building": True},
             {"x": 19500, "y": 15000, "w": 380, "h": 380, "color": (200, 120, 80), "is_building": True},
-            {"x": 7500, "y": 15000, "w": 350, "h": 350, "color": (185, 115, 65), "is_building": True},
-            {"x": 15500, "y": 10000, "w": 400, "h": 330, "color": (215, 125, 75), "is_building": True},
+            {"x": 7500, "y": 15500, "w": 350, "h": 350, "color": (185, 115, 65), "is_building": True},
+            {"x": 15500, "y": 10500, "w": 400, "h": 330, "color": (215, 125, 75), "is_building": True},
             {"x": 3500, "y": 1500, "w": 390, "h": 390, "color": (200, 105, 70), "is_building": True},
-            {"x": 11500, "y": 1000, "w": 370, "h": 370, "color": (190, 120, 60), "is_building": True},
-            {"x": 9500, "y": 6000, "w": 410, "h": 350, "color": (210, 130, 80), "is_building": True},
-            {"x": 14500, "y": 5500, "w": 380, "h": 380, "color": (205, 110, 65), "is_building": True},
-            {"x": 6500, "y": 7500, "w": 350, "h": 350, "color": (195, 100, 55), "is_building": True},
-            {"x": 18500, "y": 10500, "w": 420, "h": 330, "color": (220, 115, 70), "is_building": True},
-            {"x": 2000, "y": 3000, "w": 390, "h": 390, "color": (200, 125, 75), "is_building": True},
-            {"x": 10000, "y": 8500, "w": 370, "h": 370, "color": (185, 105, 60), "is_building": True},
+            {"x": 10000, "y": 1500, "w": 370, "h": 370, "color": (190, 120, 60), "is_building": True},
+            {"x": 9500, "y": 5500, "w": 410, "h": 350, "color": (210, 130, 80), "is_building": True},
+            {"x": 15000, "y": 5000, "w": 380, "h": 380, "color": (205, 110, 65), "is_building": True},
+            {"x": 6500, "y": 7000, "w": 350, "h": 350, "color": (195, 100, 55), "is_building": True},
+            {"x": 18500, "y": 11000, "w": 420, "h": 330, "color": (220, 115, 70), "is_building": True},
+            {"x": 2000, "y": 2500, "w": 390, "h": 390, "color": (200, 125, 75), "is_building": True},
+            {"x": 10500, "y": 9000, "w": 370, "h": 370, "color": (185, 105, 60), "is_building": True},
             {"x": 16500, "y": 3500, "w": 410, "h": 350, "color": (210, 120, 80), "is_building": True},
-            {"x": 4000, "y": 11500, "w": 380, "h": 380, "color": (205, 130, 70), "is_building": True},
+            {"x": 4000, "y": 12000, "w": 380, "h": 380, "color": (205, 130, 70), "is_building": True},
         ]
 
         # Ajouter les bâtiments à la liste des obstacles pour les collisions
@@ -1526,14 +1528,8 @@ class Game:
             (0, 255, 0),    # Vert (Joueur 4)
         ]
 
-        for i, player in enumerate(self.players):
-            if i < len(self.player_lives):
-                lives = self.player_lives[i]
-                color = player_colors[i] if i < len(player_colors) else WHITE
-                text = font.render(f"P{i+1}: {lives}", True, color)
-                x_offset = 20 + (i % 2) * (SCREEN_WIDTH // 2)
-                y_offset = 20 + (i // 2) * 40
-                DISPLAY.blit(text, (x_offset, y_offset))
+        # Les vies sont affichées dans chaque viewport, pas besoin de les afficher au centre
+        # Donc on ne fait rien ici
 
         # Score et FPS au milieu en haut
         font = pygame.font.Font(None, 36)
