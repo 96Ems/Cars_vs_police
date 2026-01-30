@@ -1,0 +1,209 @@
+[
+    {
+        "label": "pygame",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pygame",
+        "description": "pygame",
+        "detail": "pygame",
+        "documentation": {}
+    },
+    {
+        "label": "math",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
+        "documentation": {}
+    },
+    {
+        "label": "random",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "random",
+        "description": "random",
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "Particle",
+        "kind": 6,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "class Particle:\n    \"\"\"Système de particules pour les effets\"\"\"\n    def __init__(self, x, y, vx, vy, color, lifetime, size=5):\n        self.x = x\n        self.y = y\n        self.vx = vx\n        self.vy = vy\n        self.color = color\n        self.lifetime = lifetime\n        self.max_lifetime = lifetime",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "Vehicle",
+        "kind": 6,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "class Vehicle:\n    def __init__(self, x, y, is_police=False, color=None):\n        self.x = x\n        self.y = y\n        self.vx = 0\n        self.vy = 0\n        self.angle = 0\n        self.is_police = is_police\n        self.width = 55\n        self.height = 35",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "Game",
+        "kind": 6,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "class Game:\n    def __init__(self):\n        self.running = True\n        self.game_over = False\n        self.in_menu = True  # Afficher le menu au démarrage\n        self.num_players = 1  # Nombre de joueurs\n        self.selecting_players = False  # Mode sélection du nombre de joueurs\n        self.play_button_rect = None  # Rect du bouton JOUER du menu principal\n        self.skin_button_rect = pygame.Rect(SCREEN_WIDTH - 150, 15, 130, 55)\n        self.play_game_button_rect = pygame.Rect(SCREEN_WIDTH // 2 - 90, SCREEN_HEIGHT - 90, 180, 60)",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "SCREEN_WIDTH",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "SCREEN_WIDTH = 1200\nSCREEN_HEIGHT = 800\nMAP_WIDTH = 1200 * 20  # 24000\nMAP_HEIGHT = 800 * 20  # 16000\nFPS = 60\nDISPLAY = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)\npygame.display.set_caption(\"Cars vs Police - Top Down\")\nCLOCK = pygame.time.Clock()\n# Couleurs\nBLACK = (0, 0, 0)",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "SCREEN_HEIGHT",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "SCREEN_HEIGHT = 800\nMAP_WIDTH = 1200 * 20  # 24000\nMAP_HEIGHT = 800 * 20  # 16000\nFPS = 60\nDISPLAY = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)\npygame.display.set_caption(\"Cars vs Police - Top Down\")\nCLOCK = pygame.time.Clock()\n# Couleurs\nBLACK = (0, 0, 0)\nWHITE = (255, 255, 255)",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "MAP_WIDTH",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "MAP_WIDTH = 1200 * 20  # 24000\nMAP_HEIGHT = 800 * 20  # 16000\nFPS = 60\nDISPLAY = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)\npygame.display.set_caption(\"Cars vs Police - Top Down\")\nCLOCK = pygame.time.Clock()\n# Couleurs\nBLACK = (0, 0, 0)\nWHITE = (255, 255, 255)\nGREEN = (100, 200, 100)",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "MAP_HEIGHT",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "MAP_HEIGHT = 800 * 20  # 16000\nFPS = 60\nDISPLAY = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)\npygame.display.set_caption(\"Cars vs Police - Top Down\")\nCLOCK = pygame.time.Clock()\n# Couleurs\nBLACK = (0, 0, 0)\nWHITE = (255, 255, 255)\nGREEN = (100, 200, 100)\nDARK_GREEN = (80, 150, 80)",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "FPS",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "FPS = 60\nDISPLAY = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)\npygame.display.set_caption(\"Cars vs Police - Top Down\")\nCLOCK = pygame.time.Clock()\n# Couleurs\nBLACK = (0, 0, 0)\nWHITE = (255, 255, 255)\nGREEN = (100, 200, 100)\nDARK_GREEN = (80, 150, 80)\nGRAY = (150, 150, 150)",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "DISPLAY",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "DISPLAY = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)\npygame.display.set_caption(\"Cars vs Police - Top Down\")\nCLOCK = pygame.time.Clock()\n# Couleurs\nBLACK = (0, 0, 0)\nWHITE = (255, 255, 255)\nGREEN = (100, 200, 100)\nDARK_GREEN = (80, 150, 80)\nGRAY = (150, 150, 150)\nDARK_GRAY = (100, 100, 100)",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "CLOCK",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "CLOCK = pygame.time.Clock()\n# Couleurs\nBLACK = (0, 0, 0)\nWHITE = (255, 255, 255)\nGREEN = (100, 200, 100)\nDARK_GREEN = (80, 150, 80)\nGRAY = (150, 150, 150)\nDARK_GRAY = (100, 100, 100)\nYELLOW = (255, 255, 0)\nBLUE = (0, 0, 200)",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "BLACK",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "BLACK = (0, 0, 0)\nWHITE = (255, 255, 255)\nGREEN = (100, 200, 100)\nDARK_GREEN = (80, 150, 80)\nGRAY = (150, 150, 150)\nDARK_GRAY = (100, 100, 100)\nYELLOW = (255, 255, 0)\nBLUE = (0, 0, 200)\nRED = (255, 0, 0)\nORANGE = (255, 165, 0)",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "WHITE",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "WHITE = (255, 255, 255)\nGREEN = (100, 200, 100)\nDARK_GREEN = (80, 150, 80)\nGRAY = (150, 150, 150)\nDARK_GRAY = (100, 100, 100)\nYELLOW = (255, 255, 0)\nBLUE = (0, 0, 200)\nRED = (255, 0, 0)\nORANGE = (255, 165, 0)\nclass Particle:",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "GREEN",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "GREEN = (100, 200, 100)\nDARK_GREEN = (80, 150, 80)\nGRAY = (150, 150, 150)\nDARK_GRAY = (100, 100, 100)\nYELLOW = (255, 255, 0)\nBLUE = (0, 0, 200)\nRED = (255, 0, 0)\nORANGE = (255, 165, 0)\nclass Particle:\n    \"\"\"Système de particules pour les effets\"\"\"",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "DARK_GREEN",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "DARK_GREEN = (80, 150, 80)\nGRAY = (150, 150, 150)\nDARK_GRAY = (100, 100, 100)\nYELLOW = (255, 255, 0)\nBLUE = (0, 0, 200)\nRED = (255, 0, 0)\nORANGE = (255, 165, 0)\nclass Particle:\n    \"\"\"Système de particules pour les effets\"\"\"\n    def __init__(self, x, y, vx, vy, color, lifetime, size=5):",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "GRAY",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "GRAY = (150, 150, 150)\nDARK_GRAY = (100, 100, 100)\nYELLOW = (255, 255, 0)\nBLUE = (0, 0, 200)\nRED = (255, 0, 0)\nORANGE = (255, 165, 0)\nclass Particle:\n    \"\"\"Système de particules pour les effets\"\"\"\n    def __init__(self, x, y, vx, vy, color, lifetime, size=5):\n        self.x = x",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "DARK_GRAY",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "DARK_GRAY = (100, 100, 100)\nYELLOW = (255, 255, 0)\nBLUE = (0, 0, 200)\nRED = (255, 0, 0)\nORANGE = (255, 165, 0)\nclass Particle:\n    \"\"\"Système de particules pour les effets\"\"\"\n    def __init__(self, x, y, vx, vy, color, lifetime, size=5):\n        self.x = x\n        self.y = y",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "YELLOW",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "YELLOW = (255, 255, 0)\nBLUE = (0, 0, 200)\nRED = (255, 0, 0)\nORANGE = (255, 165, 0)\nclass Particle:\n    \"\"\"Système de particules pour les effets\"\"\"\n    def __init__(self, x, y, vx, vy, color, lifetime, size=5):\n        self.x = x\n        self.y = y\n        self.vx = vx",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "BLUE",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "BLUE = (0, 0, 200)\nRED = (255, 0, 0)\nORANGE = (255, 165, 0)\nclass Particle:\n    \"\"\"Système de particules pour les effets\"\"\"\n    def __init__(self, x, y, vx, vy, color, lifetime, size=5):\n        self.x = x\n        self.y = y\n        self.vx = vx\n        self.vy = vy",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "RED",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "RED = (255, 0, 0)\nORANGE = (255, 165, 0)\nclass Particle:\n    \"\"\"Système de particules pour les effets\"\"\"\n    def __init__(self, x, y, vx, vy, color, lifetime, size=5):\n        self.x = x\n        self.y = y\n        self.vx = vx\n        self.vy = vy\n        self.color = color",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    },
+    {
+        "label": "ORANGE",
+        "kind": 5,
+        "importPath": "cars_vs_police",
+        "description": "cars_vs_police",
+        "peekOfCode": "ORANGE = (255, 165, 0)\nclass Particle:\n    \"\"\"Système de particules pour les effets\"\"\"\n    def __init__(self, x, y, vx, vy, color, lifetime, size=5):\n        self.x = x\n        self.y = y\n        self.vx = vx\n        self.vy = vy\n        self.color = color\n        self.lifetime = lifetime",
+        "detail": "cars_vs_police",
+        "documentation": {}
+    }
+]
