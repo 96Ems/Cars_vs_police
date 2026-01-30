@@ -773,7 +773,8 @@ class Game:
             screen_x = obstacle["x"] - camera_x
             screen_y = obstacle["y"] - camera_y
 
-            if -150 < screen_x < viewport_width + 150 and -150 < screen_y < viewport_height + 150:
+            # Marge plus grande pour s'assurer que les gros bâtiments ne disparaissent pas
+            if -500 < screen_x < viewport_width + 500 and -500 < screen_y < viewport_height + 500:
                 # Vérifier si c'est un bâtiment de décoration coloré ou un obstacle gris
                 if obstacle.get("is_building", False):
                     # Bâtiments colorés avec portes et fenêtres
