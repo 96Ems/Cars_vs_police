@@ -648,6 +648,44 @@ class Game:
         screen_y = y - self.camera_y
         return screen_x, screen_y
 
+    def draw_paths_to_buildings(self, surface, viewport_width, viewport_height, camera_x, camera_y):
+        """Dessine les chemins qui relient les bâtiments aux routes"""
+        road_y = MAP_HEIGHT // 2
+        road_x = MAP_WIDTH // 2
+
+        for building in self.buildings:
+            building_center_x = building["x"] + building["w"] / 2
+            building_center_y = building["y"] + building["h"] / 2
+
+            # Trouver le point le plus proche sur une route
+            # Distance à la route horizontale
+            dist_to_h_road = abs(building_center_y - road_y)
+            # Distance à la route verticale
+            dist_to_v_road = abs(building_center_x - road_x)
+
+            # Choisir la route la plus proche
+            if dist_to_h_road < dist_to_v_road:
+                # Chemin vers la route horizontale
+                road_point_x = building_center_x
+                road_point_y = road_y
+            else:
+                # Chemin vers la route verticale
+                road_point_x = road_x
+                road_point_y = building_center_y
+
+            # Convertir en coordonnées écran
+            screen_x1 = building_center_x - camera_x
+            screen_y1 = building_center_y - camera_y
+            screen_x2 = road_point_x - camera_x
+            screen_y2 = road_point_y - camera_y
+
+            # Vérifier si le chemin est visible
+            if (-500 < screen_x1 < viewport_width + 500 or -500 < screen_x2 < viewport_width + 500) and \
+               (-500 < screen_y1 < viewport_height + 500 or -500 < screen_y2 < viewport_height + 500):
+                # Dessiner le chemin (route grise)
+                pygame.draw.line(surface, (110, 110, 110), (int(screen_x1), int(screen_y1)), (int(screen_x2), int(screen_y2)), 40)
+                pygame.draw.line(surface, (130, 130, 130), (int(screen_x1), int(screen_y1)), (int(screen_x2), int(screen_y2)), 38)
+
     def draw_map(self, surface, viewport_width, viewport_height, camera_x, camera_y):
         """Dessine la carte vue de dessus avec plein de décors sur une surface donnée"""
         # Fond herbe
@@ -1806,6 +1844,9 @@ class Game:
 
                     # Dessiner la carte
                     self.draw_map(viewport, viewport_width, viewport_height, camera_x, camera_y)
+
+                    # Dessiner les chemins vers les bâtiments
+                    self.draw_paths_to_buildings(viewport, viewport_width, viewport_height, camera_x, camera_y)
 
                     # Dessiner les traces de sang
                     for blood in self.blood_marks:
