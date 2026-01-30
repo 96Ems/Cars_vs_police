@@ -564,7 +564,7 @@ class Game:
 
         # Piétons qui se baladent
         self.pedestrians = []
-        for _ in range(100):  # 100 piétons
+        for _ in range(500):  # 500 piétons
             x = random.randint(100, MAP_WIDTH - 100)
             y = random.randint(100, MAP_HEIGHT - 100)
             pedestrian = Pedestrian(x, y)
@@ -1012,6 +1012,12 @@ class Game:
                 # Angle vers le joueur
                 target_angle = math.atan2(dy, dx)
 
+                # Vérifier les obstacles devant et ajuster l'angle si nécessaire
+                avoidance_angle = self.check_obstacles_ahead(police, look_ahead_distance=400)
+                if avoidance_angle is not None:
+                    # Mélanger l'angle d'évitement avec la cible (60% poursuite, 40% évitement)
+                    target_angle = target_angle * 0.6 + avoidance_angle * 0.4
+
                 # Rotation progressive - plus lent que le joueur
                 angle_diff = target_angle - police.angle
                 if angle_diff > math.pi:
@@ -1089,6 +1095,72 @@ class Game:
             if dist < vehicle_radius:
                 return True, obstacle
         return False, None
+
+    def check_obstacles_ahead(self, vehicle, look_ahead_distance=300):
+        """Vérifie les obstacles devant le véhicule et retourne l'angle d'évitement"""
+        # Véhicule radius pour la détection
+        vehicle_radius = (vehicle.width + vehicle.height) / 4
+
+        # Point de regard en avant
+        future_x = vehicle.x + math.cos(vehicle.angle) * look_ahead_distance
+        future_y = vehicle.y + math.sin(vehicle.angle) * look_ahead_distance
+
+        # Vérifier tous les bâtiments
+        all_obstacles = self.obstacles + self.buildings
+
+        obstacles_ahead = []
+        for obstacle in all_obstacles:
+            obs_left = obstacle["x"]
+            obs_right = obstacle["x"] + obstacle["w"]
+            obs_top = obstacle["y"]
+            obs_bottom = obstacle["y"] + obstacle["h"]
+
+            # Distance du futur point à l'obstacle
+            closest_x = max(obs_left, min(future_x, obs_right))
+            closest_y = max(obs_top, min(future_y, obs_bottom))
+
+            dx = future_x - closest_x
+            dy = future_y - closest_y
+            dist_to_obstacle = math.sqrt(dx**2 + dy**2)
+
+            # Si on va heurter cet obstacle, noter le
+            if dist_to_obstacle < vehicle_radius + 150:  # Détection précoce avec marge
+                # Calculer angle du centre de l'obstacle
+                obs_center_x = obs_left + (obs_right - obs_left) / 2
+                obs_center_y = obs_top + (obs_bottom - obs_top) / 2
+                obs_angle = math.atan2(obs_center_y - vehicle.y, obs_center_x - vehicle.x)
+
+                obstacles_ahead.append({
+                    'angle': obs_angle,
+                    'distance': dist_to_obstacle,
+                    'width': obs_right - obs_left,
+                    'height': obs_bottom - obs_top
+                })
+
+        # Si obstacles trouvés, retourner l'angle d'évitement
+        if obstacles_ahead:
+            # Trier par distance
+            obstacles_ahead.sort(key=lambda x: x['distance'])
+            closest_obstacle = obstacles_ahead[0]
+
+            # Déterminer de quel côté tourner (gauche ou droite)
+            angle_diff = closest_obstacle['angle'] - vehicle.angle
+
+            # Normaliser l'angle
+            while angle_diff > math.pi:
+                angle_diff -= 2 * math.pi
+            while angle_diff < -math.pi:
+                angle_diff += 2 * math.pi
+
+            # Tourner du côté opposé à l'obstacle
+            if angle_diff < 0:
+                # L'obstacle est à gauche, tourner à droite
+                return vehicle.angle - 0.4
+            else:
+                # L'obstacle est à droite, tourner à gauche
+                return vehicle.angle + 0.4
+
+        return None  # Pas d'obstacle devant
 
     def check_road_collision(self, vehicle):
         """Vérifie si le véhicule est sur une route (ralentissement optionnel)"""
