@@ -26,6 +26,23 @@ BLUE = (0, 0, 200)
 RED = (255, 0, 0)
 ORANGE = (255, 165, 0)
 
+class BloodMark:
+    """Classe pour les traces de sang au sol"""
+    def __init__(self, x, y, size=20):
+        self.x = x
+        self.y = y
+        self.size = size
+        self.intensity = 255  # Opacité
+
+    def draw(self, surface, camera_x, camera_y):
+        """Dessine la trace de sang"""
+        screen_x = self.x - camera_x
+        screen_y = self.y - camera_y
+
+        if -50 < screen_x < SCREEN_WIDTH + 50 and -50 < screen_y < SCREEN_HEIGHT + 50:
+            # Tache de sang
+            pygame.draw.circle(surface, (150, 0, 0), (int(screen_x), int(screen_y)), self.size)
+
 class Particle:
     """Système de particules pour les effets"""
     def __init__(self, x, y, vx, vy, color, lifetime, size=5):
@@ -69,6 +86,11 @@ class Pedestrian:
         self.color = random.choice([(200, 100, 100), (100, 100, 200), (100, 200, 100), (200, 200, 100)])
         self.direction_change_timer = 0
         self.direction_change_interval = random.randint(30, 120)
+        self.alive = True
+
+    def get_collision_radius(self):
+        """Retourne le rayon de collision du piéton"""
+        return self.size + 3
 
     def update(self):
         """Met à jour la position du piéton"""
@@ -420,6 +442,9 @@ class Game:
             y = random.randint(100, MAP_HEIGHT - 100)
             pedestrian = Pedestrian(x, y)
             self.pedestrians.append(pedestrian)
+
+        # Traces de sang au sol
+        self.blood_marks = []
 
         # Système de particules
         self.particles = []
@@ -866,6 +891,57 @@ class Game:
         elif abs(vehicle.x - road_x) < road_width // 2:
             return "vertical"
         return None
+
+    def check_pedestrian_collisions(self):
+        """Vérifie les collisions entre véhicules et piétons"""
+        # Collisions joueurs-piétons
+        for player in self.players:
+            if not player.alive:
+                continue
+            for pedestrian in self.pedestrians:
+                if not pedestrian.alive:
+                    continue
+                dx = pedestrian.x - player.x
+                dy = pedestrian.y - player.y
+                dist = math.sqrt(dx**2 + dy**2)
+                collision_dist = player.width / 2 + pedestrian.get_collision_radius()
+
+                if dist < collision_dist:
+                    # Le piéton est écrasé!
+                    pedestrian.alive = False
+                    # Créer du sang
+                    for _ in range(3):
+                        blood_x = pedestrian.x + random.randint(-10, 10)
+                        blood_y = pedestrian.y + random.randint(-10, 10)
+                        blood = BloodMark(blood_x, blood_y, size=random.randint(15, 25))
+                        self.blood_marks.append(blood)
+
+        # Collisions police-piétons
+        for police in self.police_vehicles:
+            if not police.alive:
+                continue
+            for pedestrian in self.pedestrians:
+                if not pedestrian.alive:
+                    continue
+                dx = pedestrian.x - police.x
+                dy = pedestrian.y - police.y
+                dist = math.sqrt(dx**2 + dy**2)
+                collision_dist = police.width / 2 + pedestrian.get_collision_radius()
+
+                if dist < collision_dist:
+                    # Le piéton est juste poussé
+                    if dist > 0:
+                        dx /= dist
+                        dy /= dist
+                        # Repousser le piéton
+                        pedestrian.x += dx * 5
+                        pedestrian.y += dy * 5
+                        # Aussi ralentir le piéton
+                        pedestrian.vx *= 0.7
+                        pedestrian.vy *= 0.7
+
+        # Nettoyer les piétons morts
+        self.pedestrians = [p for p in self.pedestrians if p.alive]
 
     def check_hearts(self):
         """Détecte si un joueur touche un cœur"""
@@ -1467,6 +1543,7 @@ class Game:
                     self.update_player()
                     self.update_police()
                     self.check_collisions()
+                    self.check_pedestrian_collisions()  # Vérifier collisions avec piétons
                     self.check_hearts()  # Vérifier si le joueur collecte un cœur
                     self.spawn_police()  # Spawner 2 policiers toutes les 10 secondes
                     self.score += 1  # Incrémenter le score chaque frame
@@ -1523,6 +1600,10 @@ class Game:
 
                     # Dessiner la carte
                     self.draw_map(viewport, viewport_width, viewport_height, camera_x, camera_y)
+
+                    # Dessiner les traces de sang
+                    for blood in self.blood_marks:
+                        blood.draw(viewport, camera_x, camera_y)
 
                     # Dessiner les cœurs
                     for heart in self.hearts:
