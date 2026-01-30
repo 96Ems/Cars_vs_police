@@ -442,12 +442,26 @@ class Game:
         self.hearts = []
         self.spawn_hearts()
 
-        # Obstacles/Zones de construction
+        # Obstacles/Zones de construction (avec collision)
         self.obstacles = [
             {"x": 2000, "y": 2000, "w": 800, "h": 800},
             {"x": 10000, "y": 5000, "w": 600, "h": 600},
             {"x": 15000, "y": 12000, "w": 1000, "h": 500},
             {"x": 5000, "y": 15000, "w": 700, "h": 900},
+        ]
+
+        # Bâtiments en décoration (sans collision)
+        self.buildings = [
+            {"x": 1000, "y": 1000, "w": 400, "h": 400, "color": (200, 100, 50)},
+            {"x": 3000, "y": 3500, "w": 350, "h": 350, "color": (180, 120, 60)},
+            {"x": 6000, "y": 2000, "w": 500, "h": 300, "color": (220, 140, 80)},
+            {"x": 8000, "y": 7000, "w": 450, "h": 400, "color": (200, 110, 70)},
+            {"x": 12000, "y": 3000, "w": 380, "h": 380, "color": (190, 130, 50)},
+            {"x": 18000, "y": 8000, "w": 420, "h": 320, "color": (210, 100, 60)},
+            {"x": 4000, "y": 9000, "w": 400, "h": 450, "color": (185, 125, 65)},
+            {"x": 14000, "y": 14000, "w": 500, "h": 400, "color": (205, 115, 55)},
+            {"x": 2000, "y": 12000, "w": 380, "h": 420, "color": (195, 105, 75)},
+            {"x": 18000, "y": 3000, "w": 430, "h": 350, "color": (215, 130, 70)},
         ]
 
         # Policiers - plus agressifs
@@ -667,7 +681,7 @@ class Game:
             if -50 < screen_y < viewport_height + 50:
                 pygame.draw.rect(surface, (220, 220, 220), (screen_x - 5, screen_y, 10, 30))
 
-        # ===== MAISONS/BÂTIMENTS =====
+        # ===== MAISONS/BÂTIMENTS (OBSTACLES avec collision) =====
         for obstacle in self.obstacles:
             screen_x = obstacle["x"] - camera_x
             screen_y = obstacle["y"] - camera_y
@@ -686,6 +700,33 @@ class Game:
                     for wy in range(int(screen_y) + 20, int(screen_y + obstacle["h"]) - 20, 30):
                         pygame.draw.rect(surface, (150, 180, 220), (wx, wy, 15, 15))
                         pygame.draw.rect(surface, (100, 100, 100), (wx, wy, 15, 15), 1)
+
+        # ===== BÂTIMENTS EN DÉCORATION (sans collision) =====
+        for building in self.buildings:
+            screen_x = building["x"] - camera_x
+            screen_y = building["y"] - camera_y
+
+            if -150 < screen_x < viewport_width + 150 and -150 < screen_y < viewport_height + 150:
+                # Ombre
+                pygame.draw.rect(surface, (80, 60, 40), (screen_x + 3, screen_y + 3, building["w"], building["h"]))
+                # Bâtiment coloré
+                pygame.draw.rect(surface, building["color"], (screen_x, screen_y, building["w"], building["h"]))
+                # Toit
+                roof_color = tuple(max(0, c - 50) for c in building["color"])
+                pygame.draw.rect(surface, roof_color, (screen_x, screen_y - 8, building["w"], 8))
+                # Bordure
+                border_color = tuple(min(255, c + 30) for c in building["color"])
+                pygame.draw.rect(surface, border_color, (screen_x, screen_y, building["w"], building["h"]), 2)
+                # Fenêtres (plus petites que les obstacles)
+                for wx in range(int(screen_x) + 15, int(screen_x + building["w"]) - 15, 35):
+                    for wy in range(int(screen_y) + 15, int(screen_y + building["h"]) - 15, 35):
+                        pygame.draw.rect(surface, (100, 150, 200), (wx, wy, 12, 12))
+                        pygame.draw.rect(surface, (50, 50, 50), (wx, wy, 12, 12), 1)
+                # Porte
+                door_x = int(screen_x + building["w"] // 2 - 15)
+                door_y = int(screen_y + building["h"] - 40)
+                pygame.draw.rect(surface, (100, 50, 0), (door_x, door_y, 30, 40))
+                pygame.draw.rect(surface, (80, 40, 0), (door_x, door_y, 30, 40), 2)
 
     def update_player(self):
         """Contrôle les joueurs avec des touches différentes"""
