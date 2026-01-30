@@ -1818,14 +1818,23 @@ class Game:
                     if particle.lifetime <= 0:
                         self.particles.remove(particle)
 
-                # === CONFIGURATION DES VIEWPORTS ===
-                if len(self.players) == 1:
-                    # 1 joueur: plein écran
+                # === CONFIGURATION DES VIEWPORTS (basée sur joueurs vivants) ===
+                # Compter les joueurs vivants et créer une liste
+                alive_players = [(i, player) for i, player in enumerate(self.players) if player.alive]
+                num_alive = len(alive_players)
+
+                if num_alive == 0:
+                    # Tous les joueurs sont morts (game over)
+                    viewports = []
+                    viewport_positions = []
+                    viewport_dimensions = []
+                elif num_alive == 1:
+                    # 1 joueur vivant: plein écran
                     viewports = [DISPLAY]
                     viewport_positions = [(0, 0)]
                     viewport_dimensions = [(SCREEN_WIDTH, SCREEN_HEIGHT)]
-                elif len(self.players) == 2:
-                    # 2 joueurs: split vertical (gauche/droite)
+                elif num_alive == 2:
+                    # 2 joueurs vivants: split vertical (gauche/droite)
                     viewport_width = SCREEN_WIDTH // 2
                     viewports = [
                         pygame.Surface((viewport_width, SCREEN_HEIGHT)),
@@ -1833,7 +1842,26 @@ class Game:
                     ]
                     viewport_positions = [(0, 0), (viewport_width, 0)]
                     viewport_dimensions = [(viewport_width, SCREEN_HEIGHT), (viewport_width, SCREEN_HEIGHT)]
-                else:  # 3-4 joueurs
+                elif num_alive == 3:
+                    # 3 joueurs vivants: 1 grand en haut, 2 en bas
+                    viewport_width = SCREEN_WIDTH // 2
+                    viewport_height = SCREEN_HEIGHT // 2
+                    viewports = [
+                        pygame.Surface((SCREEN_WIDTH, viewport_height)),  # Grand en haut
+                        pygame.Surface((viewport_width, viewport_height)),  # Bas gauche
+                        pygame.Surface((viewport_width, viewport_height))   # Bas droite
+                    ]
+                    viewport_positions = [
+                        (0, 0),
+                        (0, viewport_height),
+                        (viewport_width, viewport_height)
+                    ]
+                    viewport_dimensions = [
+                        (SCREEN_WIDTH, viewport_height),
+                        (viewport_width, viewport_height),
+                        (viewport_width, viewport_height)
+                    ]
+                else:  # 4 joueurs vivants
                     # Grille 2x2
                     viewport_width = SCREEN_WIDTH // 2
                     viewport_height = SCREEN_HEIGHT // 2
@@ -1844,19 +1872,14 @@ class Game:
                     ]
                     viewport_dimensions = [(viewport_width, viewport_height)] * 4
 
-                # === RENDU MULTI-VIEWPORT ===
-                for i, player in enumerate(self.players):
-                    if i >= len(viewports):
+                # === RENDU MULTI-VIEWPORT (seulement pour joueurs vivants) ===
+                for viewport_idx, (player_idx, player) in enumerate(alive_players):
+                    if viewport_idx >= len(viewports):
                         break
 
-                    if not player.alive:
-                        # Afficher un viewport noir pour les joueurs morts
-                        viewports[i].fill((0, 0, 0))
-                        continue
-
-                    viewport = viewports[i]
-                    viewport_width, viewport_height = viewport_dimensions[i]
-                    camera_x, camera_y = self.update_player_camera(i, viewport_width, viewport_height)
+                    viewport = viewports[viewport_idx]
+                    viewport_width, viewport_height = viewport_dimensions[viewport_idx]
+                    camera_x, camera_y = self.update_player_camera(player_idx, viewport_width, viewport_height)
 
                     # Dessiner la carte
                     self.draw_map(viewport, viewport_width, viewport_height, camera_x, camera_y)
@@ -1897,15 +1920,15 @@ class Game:
                         particle.draw(viewport, camera_x, camera_y)
 
                     # Afficher les vies du joueur dans le viewport (en multijoueur)
-                    if len(self.players) > 1 and i < len(self.player_lives):
+                    if num_alive > 1 and player_idx < len(self.player_lives):
                         player_colors = [
                             (255, 200, 0),  # Jaune (Joueur 1)
                             (255, 0, 0),    # Rouge (Joueur 2)
                             (0, 100, 255),  # Bleu (Joueur 3)
                             (0, 255, 0),    # Vert (Joueur 4)
                         ]
-                        color = player_colors[i] if i < len(player_colors) else WHITE
-                        lives = self.player_lives[i]
+                        color = player_colors[player_idx] if player_idx < len(player_colors) else WHITE
+                        lives = self.player_lives[player_idx]
                         font = pygame.font.Font(None, 36)
                         text = font.render(f"Vies: {lives}", True, color)
                         viewport.blit(text, (10, 10))
@@ -1914,7 +1937,7 @@ class Game:
                     pygame.draw.rect(viewport, WHITE, viewport.get_rect(), 3)
 
                     # Composer sur DISPLAY
-                    DISPLAY.blit(viewport, viewport_positions[i])
+                    DISPLAY.blit(viewport, viewport_positions[viewport_idx])
 
                 # === HUD MULTI-VIEWPORT ===
                 self.draw_hud_multiplayer() if len(self.players) > 1 else self.draw_hud()
