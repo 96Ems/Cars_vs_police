@@ -57,6 +57,53 @@ class Particle:
             if -50 < screen_x < SCREEN_WIDTH + 50 and -50 < screen_y < SCREEN_HEIGHT + 50:
                 pygame.draw.circle(surface, self.color, (int(screen_x), int(screen_y)), size)
 
+class Pedestrian:
+    """Classe pour les piétons qui se baladent sur la map"""
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.vx = random.uniform(-1, 1)
+        self.vy = random.uniform(-1, 1)
+        self.speed = random.uniform(0.5, 1.5)
+        self.size = random.randint(4, 6)
+        self.color = random.choice([(200, 100, 100), (100, 100, 200), (100, 200, 100), (200, 200, 100)])
+        self.direction_change_timer = 0
+        self.direction_change_interval = random.randint(30, 120)
+
+    def update(self):
+        """Met à jour la position du piéton"""
+        # Changer de direction aléatoirement
+        self.direction_change_timer += 1
+        if self.direction_change_timer >= self.direction_change_interval:
+            self.direction_change_timer = 0
+            angle = random.random() * 2 * math.pi
+            self.vx = math.cos(angle)
+            self.vy = math.sin(angle)
+            self.direction_change_interval = random.randint(30, 120)
+
+        # Mouvement
+        self.x += self.vx * self.speed
+        self.y += self.vy * self.speed
+
+        # Limites de la map
+        if self.x < 0 or self.x > MAP_WIDTH:
+            self.vx *= -1
+            self.x = max(0, min(MAP_WIDTH, self.x))
+        if self.y < 0 or self.y > MAP_HEIGHT:
+            self.vy *= -1
+            self.y = max(0, min(MAP_HEIGHT, self.y))
+
+    def draw(self, surface, camera_x, camera_y):
+        """Dessine le piéton"""
+        screen_x = self.x - camera_x
+        screen_y = self.y - camera_y
+
+        if -50 < screen_x < SCREEN_WIDTH + 50 and -50 < screen_y < SCREEN_HEIGHT + 50:
+            # Corps du piéton
+            pygame.draw.circle(surface, self.color, (int(screen_x), int(screen_y)), self.size)
+            # Contour
+            pygame.draw.circle(surface, (0, 0, 0), (int(screen_x), int(screen_y)), self.size, 1)
+
 class Vehicle:
     def __init__(self, x, y, is_police=False, color=None):
         self.x = x
@@ -365,6 +412,14 @@ class Game:
             y = MAP_HEIGHT // 2 + 1000 * math.sin(angle)
             police = Vehicle(x, y, is_police=True)
             self.police_vehicles.append(police)
+
+        # Piétons qui se baladent
+        self.pedestrians = []
+        for _ in range(30):  # 30 piétons
+            x = random.randint(100, MAP_WIDTH - 100)
+            y = random.randint(100, MAP_HEIGHT - 100)
+            pedestrian = Pedestrian(x, y)
+            self.pedestrians.append(pedestrian)
 
         # Système de particules
         self.particles = []
@@ -1416,6 +1471,10 @@ class Game:
                     self.spawn_police()  # Spawner 2 policiers toutes les 10 secondes
                     self.score += 1  # Incrémenter le score chaque frame
 
+                # Mise à jour des piétons
+                for pedestrian in self.pedestrians:
+                    pedestrian.update()
+
                 # Mise à jour des particules
                 for particle in self.particles[:]:
                     particle.update()
@@ -1480,6 +1539,10 @@ class Game:
                     # Dessiner les policiers
                     for police in self.police_vehicles:
                         police.draw(viewport, camera_x, camera_y)
+
+                    # Dessiner les piétons
+                    for pedestrian in self.pedestrians:
+                        pedestrian.draw(viewport, camera_x, camera_y)
 
                     # Dessiner les particules
                     for particle in self.particles:
