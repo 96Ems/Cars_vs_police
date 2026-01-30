@@ -564,7 +564,7 @@ class Game:
 
         # Piétons qui se baladent
         self.pedestrians = []
-        for _ in range(30):  # 30 piétons
+        for _ in range(100):  # 100 piétons
             x = random.randint(100, MAP_WIDTH - 100)
             y = random.randint(100, MAP_HEIGHT - 100)
             pedestrian = Pedestrian(x, y)
@@ -1152,8 +1152,16 @@ class Game:
                         pedestrian.vx *= 0.7
                         pedestrian.vy *= 0.7
 
-        # Nettoyer les piétons morts
-        self.pedestrians = [p for p in self.pedestrians if p.alive]
+        # Respawner les piétons morts
+        dead_pedestrians = [p for p in self.pedestrians if not p.alive]
+        for dead_ped in dead_pedestrians:
+            # Créer un nouveau piéton à une position aléatoire
+            x = random.randint(100, MAP_WIDTH - 100)
+            y = random.randint(100, MAP_HEIGHT - 100)
+            new_pedestrian = Pedestrian(x, y)
+            # Remplacer le piéton mort par le nouveau
+            idx = self.pedestrians.index(dead_ped)
+            self.pedestrians[idx] = new_pedestrian
 
     def check_hearts(self):
         """Détecte si un joueur touche un cœur"""
