@@ -1844,6 +1844,20 @@ class Game:
                     for particle in self.particles:
                         particle.draw(viewport, camera_x, camera_y)
 
+                    # Afficher les vies du joueur dans le viewport (en multijoueur)
+                    if len(self.players) > 1 and i < len(self.player_lives):
+                        player_colors = [
+                            (255, 200, 0),  # Jaune (Joueur 1)
+                            (255, 0, 0),    # Rouge (Joueur 2)
+                            (0, 100, 255),  # Bleu (Joueur 3)
+                            (0, 255, 0),    # Vert (Joueur 4)
+                        ]
+                        color = player_colors[i] if i < len(player_colors) else WHITE
+                        lives = self.player_lives[i]
+                        font = pygame.font.Font(None, 36)
+                        text = font.render(f"Vies: {lives}", True, color)
+                        viewport.blit(text, (10, 10))
+
                     # Bordure du viewport
                     pygame.draw.rect(viewport, WHITE, viewport.get_rect(), 3)
 
