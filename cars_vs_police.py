@@ -371,6 +371,15 @@ class Vehicle:
             pygame.draw.circle(surface, siren_color, (siren_screen_x, siren_screen_y), 8)
             pygame.draw.circle(surface, (200, 200, 200), (siren_screen_x, siren_screen_y), 8, 2)
 
+        # ===== HITBOX VISUELLE =====
+        hitbox_radius = (self.width + self.height) / 4
+        if not self.is_police:
+            # Hitbox pour les joueurs (vert)
+            pygame.draw.circle(surface, (0, 255, 0), (int(screen_x), int(screen_y)), int(hitbox_radius), 2)
+        else:
+            # Hitbox pour les policiers (rouge)
+            pygame.draw.circle(surface, (255, 0, 0), (int(screen_x), int(screen_y)), int(hitbox_radius), 2)
+
 class Game:
     def __init__(self):
         self.running = True
