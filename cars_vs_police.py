@@ -607,6 +607,22 @@ class Game:
             player = Vehicle(positions[i][0], positions[i][1], is_police=False, color=colors[i])
             self.players.append(player)
 
+        # Réinitialiser les policiers quand on crée les joueurs (nouvelle partie)
+        self.police_vehicles = []
+        for i in range(5):  # Toujours 5 policiers au démarrage
+            angle = (i / 5) * 2 * math.pi
+            x = MAP_WIDTH // 2 + 1000 * math.cos(angle)
+            y = MAP_HEIGHT // 2 + 1000 * math.sin(angle)
+            police = Vehicle(x, y, is_police=True)
+            self.police_vehicles.append(police)
+
+        # Réinitialiser les autres éléments de jeu
+        self.particles = []
+        self.blood_marks = []
+        self.hearts = []
+        self.spawn_hearts()
+        self.spawn_timer = 0
+
     def update_camera(self):
         """Met à jour la position de la caméra pour suivre tous les joueurs"""
         if not self.players:
