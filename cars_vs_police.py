@@ -381,6 +381,19 @@ class Vehicle:
             pygame.draw.circle(surface, (255, 0, 0), (int(screen_x), int(screen_y)), int(hitbox_radius), 2)
 
 class Game:
+    def reset_to_menu(self):
+        """Réinitialise le jeu et revient au menu principal"""
+        self.game_over = False
+        self.in_menu = True
+        self.selecting_players = False
+        self.show_skin_menu = False
+        self.players = []
+        self.player = None
+        self.num_players = 1
+        self.score = 0
+        self.collision_flash = 0
+        self.death_flash = 0
+
     def __init__(self):
         self.running = True
         self.game_over = False
@@ -1464,10 +1477,10 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
                     if event.key == pygame.K_r and self.game_over:
-                        self.__init__()
+                        self.reset_to_menu()
                     # ENTRÉE pour relancer le jeu
                     if event.key == pygame.K_RETURN and self.game_over:
-                        self.__init__()
+                        self.reset_to_menu()
                     # B pour ouvrir/fermer le menu des skins
                     if event.key == pygame.K_b and not self.in_menu and not self.selecting_players and not self.game_over:
                         self.show_skin_menu = not self.show_skin_menu
@@ -1515,7 +1528,7 @@ class Game:
                     # Bouton PLAY en bas au milieu (après game over)
                     play_rect = pygame.Rect(SCREEN_WIDTH // 2 - 90, SCREEN_HEIGHT - 90, 180, 60)
                     if play_rect.collidepoint(mouse_pos) and self.game_over:
-                        self.__init__()
+                        self.reset_to_menu()
 
                     # Clic sur un skin dans le menu
                     elif self.show_skin_menu and not self.game_over:
