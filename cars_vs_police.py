@@ -759,42 +759,65 @@ class Game:
             police.y = max(50, min(MAP_HEIGHT - 50, police.y))
 
     def check_hearts(self):
-        """Détecte si le joueur touche un cœur"""
-        if not self.player or not self.player.alive:
-            return
+        """Détecte si un joueur touche un cœur"""
+        for player_idx, player in enumerate(self.players):
+            if not player.alive:
+                continue
 
-        for heart in self.hearts:
-            if not heart["collected"]:
-                dx = self.player.x - heart["x"]
-                dy = self.player.y - heart["y"]
-                dist = math.sqrt(dx**2 + dy**2)
-                if dist < 30:  # Hitbox du cœur
-                    heart["collected"] = True
-                    if isinstance(self.player_lives, list):
-                        # Mode multijoueur - donner vie au joueur 1
-                        self.player_lives[0] += 1
-                    else:
-                        # Mode solo
-                        self.player_lives += 1
-                    # Créer des particules vertes
-                    for _ in range(10):
-                        angle = random.random() * 2 * math.pi
-                        speed = random.uniform(1, 3)
-                        vx = math.cos(angle) * speed
-                        vy = math.sin(angle) * speed
-                        particle = Particle(
-                            self.player.x, self.player.y, vx, vy,
-                            (0, 255, 0),  # Vert
-                            lifetime=20,
-                            size=5
-                        )
-                        self.particles.append(particle)
+            for heart in self.hearts:
+                if not heart["collected"]:
+                    dx = player.x - heart["x"]
+                    dy = player.y - heart["y"]
+                    dist = math.sqrt(dx**2 + dy**2)
+                    if dist < 30:  # Hitbox du cœur
+                        heart["collected"] = True
+                        if isinstance(self.player_lives, list):
+                            # Mode multijoueur - donner vie au joueur
+                            self.player_lives[player_idx] += 1
+                        else:
+                            # Mode solo
+                            self.player_lives += 1
+                        # Créer des particules vertes
+                        for _ in range(10):
+                            angle = random.random() * 2 * math.pi
+                            speed = random.uniform(1, 3)
+                            vx = math.cos(angle) * speed
+                            vy = math.sin(angle) * speed
+                            particle = Particle(
+                                player.x, player.y, vx, vy,
+                                (0, 255, 0),  # Vert
+                                lifetime=20,
+                                size=5
+                            )
+                            self.particles.append(particle)
         # Nettoyer les cœurs collectés
         self.hearts = [h for h in self.hearts if not h["collected"]]
 
     def check_collisions(self):
         """Détecte les collisions"""
         current_time = pygame.time.get_ticks()
+
+        # Vérifier collisions entre joueurs
+        for i, player1 in enumerate(self.players):
+            if not player1.alive:
+                continue
+            for player2 in self.players[i+1:]:
+                if not player2.alive:
+                    continue
+                if player1.check_collision(player2):
+                    # Les joueurs se repoussent
+                    dx = player2.x - player1.x
+                    dy = player2.y - player1.y
+                    dist = math.sqrt(dx**2 + dy**2)
+                    if dist > 0:
+                        dx /= dist
+                        dy /= dist
+                        # Appliquer une force de répulsion
+                        force = 2
+                        player1.speed = -force
+                        player1.angle = math.atan2(dy, dx)
+                        player2.speed = -force
+                        player2.angle = math.atan2(-dy, -dx)
 
         # Vérifier collisions entre policiers
         for i, police1 in enumerate(self.police_vehicles):
