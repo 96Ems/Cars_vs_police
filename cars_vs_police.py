@@ -74,6 +74,39 @@ class Particle:
             if -50 < screen_x < SCREEN_WIDTH + 50 and -50 < screen_y < SCREEN_HEIGHT + 50:
                 pygame.draw.circle(surface, self.color, (int(screen_x), int(screen_y)), size)
 
+class TrafficLight:
+    """Classe pour les feux rouges"""
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.state = 0  # 0 = rouge, 1 = vert (juste décoration, pas de gameplay)
+        self.timer = random.randint(0, 120)
+        self.change_interval = random.randint(60, 180)
+
+    def update(self):
+        """Change l'état du feu"""
+        self.timer += 1
+        if self.timer >= self.change_interval:
+            self.timer = 0
+            self.state = 1 - self.state
+            self.change_interval = random.randint(60, 180)
+
+    def draw(self, surface, camera_x, camera_y):
+        """Dessine le feu rouge"""
+        screen_x = self.x - camera_x
+        screen_y = self.y - camera_y
+
+        if -50 < screen_x < SCREEN_WIDTH + 50 and -50 < screen_y < SCREEN_HEIGHT + 50:
+            # Poteau
+            pygame.draw.rect(surface, (50, 50, 50), (screen_x - 3, screen_y - 20, 6, 40))
+            # Boîte du feu
+            pygame.draw.rect(surface, (30, 30, 30), (screen_x - 10, screen_y - 25, 20, 35))
+            # Feu (rouge ou vert)
+            light_color = (255, 0, 0) if self.state == 0 else (0, 255, 0)
+            pygame.draw.circle(surface, light_color, (int(screen_x), int(screen_y - 7)), 6)
+            # Bordure du feu
+            pygame.draw.circle(surface, (100, 100, 100), (int(screen_x), int(screen_y - 7)), 6, 1)
+
 class Pedestrian:
     """Classe pour les piétons qui se baladent sur la map"""
     def __init__(self, x, y):
@@ -498,6 +531,25 @@ class Game:
 
         # Ajouter les bâtiments à la liste des obstacles pour les collisions
         self.obstacles.extend(self.buildings)
+
+        # Feux rouges à côté des routes
+        self.traffic_lights = []
+        road_y = MAP_HEIGHT // 2
+        road_x = MAP_WIDTH // 2
+
+        # Feux sur la route horizontale
+        for x in range(500, MAP_WIDTH, 400):
+            # Feu à gauche
+            self.traffic_lights.append(TrafficLight(x, road_y - 100))
+            # Feu à droite
+            self.traffic_lights.append(TrafficLight(x, road_y + 100))
+
+        # Feux sur la route verticale
+        for y in range(500, MAP_HEIGHT, 400):
+            # Feu en haut
+            self.traffic_lights.append(TrafficLight(road_x - 100, y))
+            # Feu en bas
+            self.traffic_lights.append(TrafficLight(road_x + 100, y))
 
         # Policiers - plus agressifs
         self.police_vehicles = []
@@ -1706,6 +1758,10 @@ class Game:
                 for pedestrian in self.pedestrians:
                     pedestrian.update()
 
+                # Mise à jour des feux rouges
+                for light in self.traffic_lights:
+                    light.update()
+
                 # Mise à jour des particules
                 for particle in self.particles[:]:
                     particle.update()
@@ -1778,6 +1834,10 @@ class Game:
                     # Dessiner les piétons
                     for pedestrian in self.pedestrians:
                         pedestrian.draw(viewport, camera_x, camera_y)
+
+                    # Dessiner les feux rouges
+                    for light in self.traffic_lights:
+                        light.draw(viewport, camera_x, camera_y)
 
                     # Dessiner les particules
                     for particle in self.particles:
