@@ -662,6 +662,14 @@ class Game:
             if abs(player.speed) > 0.1:
                 player.wheel_rotation += abs(player.speed) * 0.3
 
+            # Vérifier collision avec les obstacles (bâtiments)
+            collision, obstacle = self.check_obstacles_collision(player)
+            if collision:
+                # Repousser le joueur en arrière
+                player.speed = -player.speed * 0.8
+                player.x -= move_x + slip_x
+                player.y -= move_y + slip_y
+
             # Limites de la map
             player.x = max(50, min(MAP_WIDTH - 50, player.x))
             player.y = max(50, min(MAP_HEIGHT - 50, player.y))
@@ -754,9 +762,55 @@ class Game:
             if abs(police.speed) > 0.1:
                 police.wheel_rotation += abs(police.speed) * 0.3
 
+            # Vérifier collision avec les obstacles (bâtiments)
+            collision, obstacle = self.check_obstacles_collision(police)
+            if collision:
+                # Repousser le policier en arrière
+                police.speed = -police.speed * 0.8
+                police.x -= move_x + slip_x
+                police.y -= move_y + slip_y
+
             # Limites
             police.x = max(50, min(MAP_WIDTH - 50, police.x))
             police.y = max(50, min(MAP_HEIGHT - 50, police.y))
+
+    def check_obstacles_collision(self, vehicle):
+        """Vérifie la collision d'un véhicule avec les obstacles/bâtiments"""
+        for obstacle in self.obstacles:
+            # Vérifier si le véhicule chevauche le bâtiment
+            obs_left = obstacle["x"]
+            obs_right = obstacle["x"] + obstacle["w"]
+            obs_top = obstacle["y"]
+            obs_bottom = obstacle["y"] + obstacle["h"]
+
+            # Hitbox du véhicule (rectangle simplifié)
+            vehicle_radius = (vehicle.width + vehicle.height) / 4
+
+            # Collision AABB vs circle
+            closest_x = max(obs_left, min(vehicle.x, obs_right))
+            closest_y = max(obs_top, min(vehicle.y, obs_bottom))
+
+            dx = vehicle.x - closest_x
+            dy = vehicle.y - closest_y
+            dist = math.sqrt(dx**2 + dy**2)
+
+            if dist < vehicle_radius:
+                return True, obstacle
+        return False, None
+
+    def check_road_collision(self, vehicle):
+        """Vérifie si le véhicule est sur une route (ralentissement optionnel)"""
+        road_y = MAP_HEIGHT // 2
+        road_x = MAP_WIDTH // 2
+        road_width = 80
+
+        # Route horizontale
+        if abs(vehicle.y - road_y) < road_width // 2:
+            return "horizontal"
+        # Route verticale
+        elif abs(vehicle.x - road_x) < road_width // 2:
+            return "vertical"
+        return None
 
     def check_hearts(self):
         """Détecte si un joueur touche un cœur"""
