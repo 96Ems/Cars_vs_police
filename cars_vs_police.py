@@ -382,10 +382,10 @@ class Vehicle:
 
 class Game:
     def reset_to_menu(self):
-        """Réinitialise le jeu et revient au menu principal"""
+        """Réinitialise le jeu et va directement au sélecteur de joueurs"""
         self.game_over = False
-        self.in_menu = True
-        self.selecting_players = False
+        self.in_menu = False  # Skip le menu principal
+        self.selecting_players = True  # Aller directement au sélecteur
         self.show_skin_menu = False
         self.players = []
         self.player = None
@@ -1511,10 +1511,12 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         self.esc_pressed = False
                         # Revenir à l'écran précédent (pas de quit)
-                        if self.selecting_players:
+                        if self.selecting_players and not self.game_over:
+                            # Du sélecteur -> retour au menu principal
                             self.selecting_players = False
                             self.in_menu = True
-                        elif not self.in_menu and not self.game_over:
+                        elif not self.in_menu and not self.selecting_players and not self.game_over:
+                            # Du jeu -> retour au menu principal
                             self.in_menu = True
                     if event.key == pygame.K_r and self.game_over:
                         self.reset_to_menu()
