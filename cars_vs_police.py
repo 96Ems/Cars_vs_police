@@ -1055,82 +1055,86 @@ class Game:
                         police2.speed = -force
                         police2.angle = math.atan2(-dy, -dx)
 
+        # Vérifier collisions police-joueurs (TOUS les joueurs)
         for police in self.police_vehicles:
-            if police.alive and self.player and self.player.alive and self.player.check_collision(police):
-                # Cooldown collision
-                if current_time - self.last_collision_time > 1000:  # 1 seconde
-                    self.last_collision_time = current_time
-                    if isinstance(self.player_lives, list):
-                        # Mode multijoueur
-                        player_idx = self.players.index(self.player)
-                        self.player_lives[player_idx] -= 1
-                    else:
-                        # Mode solo
-                        self.player_lives -= 1
+            if not police.alive:
+                continue
+            for player_idx, player in enumerate(self.players):
+                if not player.alive:
+                    continue
+                if player.check_collision(police):
+                    # Cooldown collision
+                    if current_time - self.last_collision_time > 1000:  # 1 seconde
+                        self.last_collision_time = current_time
+                        if isinstance(self.player_lives, list):
+                            # Mode multijoueur
+                            self.player_lives[player_idx] -= 1
+                        else:
+                            # Mode solo
+                            self.player_lives -= 1
 
-                    # Effet de flash de collision
-                    self.collision_flash = 15
+                        # Effet de flash de collision
+                        self.collision_flash = 15
 
-                    # Calculer la direction du knockback
-                    dx = self.player.x - police.x
-                    dy = self.player.y - police.y
-                    dist = math.sqrt(dx**2 + dy**2)
+                        # Calculer la direction du knockback
+                        dx = player.x - police.x
+                        dy = player.y - police.y
+                        dist = math.sqrt(dx**2 + dy**2)
 
-                    if dist > 0:
-                        # Normaliser la direction
-                        dx /= dist
-                        dy /= dist
+                        if dist > 0:
+                            # Normaliser la direction
+                            dx /= dist
+                            dy /= dist
 
-                        # Créer des particules d'étincelles
-                        for _ in range(15):
-                            angle = random.random() * 2 * math.pi
-                            speed = random.uniform(1, 5)
-                            vx = math.cos(angle) * speed
-                            vy = math.sin(angle) * speed
-                            particle = Particle(
-                                self.player.x, self.player.y, vx, vy,
-                                (255, random.randint(100, 200), 0),  # Couleur orange/jaune
-                                lifetime=30,
-                                size=random.randint(3, 8)
-                            )
-                            self.particles.append(particle)
+                            # Créer des particules d'étincelles
+                            for _ in range(15):
+                                angle = random.random() * 2 * math.pi
+                                speed = random.uniform(1, 5)
+                                vx = math.cos(angle) * speed
+                                vy = math.sin(angle) * speed
+                                particle = Particle(
+                                    player.x, player.y, vx, vy,
+                                    (255, random.randint(100, 200), 0),  # Couleur orange/jaune
+                                    lifetime=30,
+                                    size=random.randint(3, 8)
+                                )
+                                self.particles.append(particle)
 
-                        # Appliquer le knockback
-                        knockback_force = 8
-                        self.player.speed = knockback_force
-                        self.player.angle = math.atan2(dy, dx)
+                            # Appliquer le knockback
+                            knockback_force = 8
+                            player.speed = knockback_force
+                            player.angle = math.atan2(dy, dx)
 
-                    # Vérifier si le joueur est mort
-                    if isinstance(self.player_lives, list):
-                        # Mode multijoueur - vérifier le joueur courant
-                        player_idx = self.players.index(self.player)
-                        if self.player_lives[player_idx] <= 0:
-                            self.player.alive = False
-                            # En multijoueur, on continue tant qu'il reste des joueurs
-                            if all(not p.alive for p in self.players):
+                        # Vérifier si le joueur est mort
+                        if isinstance(self.player_lives, list):
+                            # Mode multijoueur - vérifier le joueur courant
+                            if self.player_lives[player_idx] <= 0:
+                                player.alive = False
+                                # En multijoueur, on continue tant qu'il reste des joueurs
+                                if all(not p.alive for p in self.players):
+                                    self.game_over = True
+                                    self.death_flash = 30
+                        else:
+                            # Mode solo
+                            if self.player_lives <= 0:
+                                player.alive = False
                                 self.game_over = True
                                 self.death_flash = 30
-                    else:
-                        # Mode solo
-                        if self.player_lives <= 0:
-                            self.player.alive = False
-                            self.game_over = True
-                            self.death_flash = 30
 
-                        # Explosion de particules à la mort
-                        for _ in range(40):
-                            angle = random.random() * 2 * math.pi
-                            speed = random.uniform(2, 8)
-                            vx = math.cos(angle) * speed
-                            vy = math.sin(angle) * speed
-                            color = random.choice([RED, ORANGE, YELLOW, (255, 200, 0)])
-                            particle = Particle(
-                                self.player.x, self.player.y, vx, vy,
-                                color,
-                                lifetime=40,
-                                size=random.randint(5, 12)
-                            )
-                            self.particles.append(particle)
+                                # Explosion de particules à la mort
+                                for _ in range(40):
+                                    angle = random.random() * 2 * math.pi
+                                    speed = random.uniform(2, 8)
+                                    vx = math.cos(angle) * speed
+                                    vy = math.sin(angle) * speed
+                                    color = random.choice([RED, ORANGE, YELLOW, (255, 200, 0)])
+                                    particle = Particle(
+                                        player.x, player.y, vx, vy,
+                                        color,
+                                        lifetime=40,
+                                        size=random.randint(5, 12)
+                                    )
+                                    self.particles.append(particle)
 
     def spawn_hearts(self):
         """Spawne 100 cœurs aléatoires sur la map"""
